@@ -1,6 +1,34 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render 
 from blog.models import Post
+from django.views.generic import CreateView
+from blog.forms import PostForm
 
+# post_new = CreateView.as_view(
+#     form_class=PostForm,
+#     model=Post,
+#     success_url="/blog/",
+# )
+
+def post_new(request):
+    # print("request.method = ",request.method)
+    # print("request.POST=",request.POST)
+    if request.method == "GET":
+        form = PostForm()
+    else:
+        form = PostForm(request.POST)
+        if form.is_valid():
+            # 유효성 검사에 통과한 값들이 저장된 dict
+            # form.cleaned_data
+            post = form.save()
+            # return redirect("/blog/")
+            # return redirect(f"/blog/{post.pk}/")
+            # return redirect(post.get_absolute_url())
+            return redirect(post)
+
+
+    return render(request,"blog/post_form.html",{
+        'form':form,
+    })
 
 def index(request):
     #전체 포스팅을 가져올 준비 아직 가져오지는 않음
